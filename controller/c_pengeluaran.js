@@ -1,27 +1,20 @@
 
 const mongoose = require("mongoose")
-const model = require("../model/m_penjualan")
-const product = require("../model/m_product")
+const model = require("../model/m_pengeluaran")
+const detailPembelian = require("./detail/c_detail_pembelian")
 const { requestResponse } = require("../setup")
 const ObjectId = mongoose.Types.ObjectId
 
-const updateStok = (id, stokBaru) => {
-  product
-    .updateOne(
-      { _id: ObjectId(id) },
-      { $inc: { stok: -stokBaru } }
-    ).then()
-}
-
-exports.addPenjualan = (data) =>
+exports.addPengeluaran = (data) =>
   new Promise((resolve, reject) => {
     try {
       model
         .create(data)
         .then(() => {
-          data.products.forEach(r => {
-            updateStok(r.object_id, r.jumlah_penjualan)
-          })
+          data.barangs.forEach(r => {
+            detailPembelian
+              .updateStokDetail(r.ObjectId, r.jumlahPengeluaran)
+          });
           resolve(requestResponse.common_success)
         })
         .catch((e) => {
@@ -34,7 +27,7 @@ exports.addPenjualan = (data) =>
     }
   })
 
-exports.getPenjualan = () =>
+exports.getPengeluaran = () =>
   new Promise((resolve, reject) => {
     try {
       model
@@ -52,7 +45,7 @@ exports.getPenjualan = () =>
     }
   })
 
-exports.getPenjualanById = (id) =>
+exports.getPengeluaranById = (id) =>
   new Promise((resolve, reject) => {
     try {
       model
@@ -70,7 +63,7 @@ exports.getPenjualanById = (id) =>
     }
   })
 
-exports.updatePenjualan = (id, data) =>
+exports.updatePengeluaran = (id, data) =>
   new Promise((resolve, reject) => {
     try {
       model
@@ -91,7 +84,7 @@ exports.updatePenjualan = (id, data) =>
     }
   })
 
-exports.deletePenjualan = (id) =>
+exports.deletePengeluaran = (id) =>
   new Promise((resolve, reject) => {
     try {
       model

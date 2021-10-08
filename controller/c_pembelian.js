@@ -1,26 +1,31 @@
 
 const mongoose = require("mongoose")
-const model = require("../model/m_penjualan")
-const product = require("../model/m_product")
+const model = require("../model/m_pembelian")
+const c_detail_barang = require("./detail/c_detail_pembelian")
 const { requestResponse } = require("../setup")
 const ObjectId = mongoose.Types.ObjectId
 
-const updateStok = (id, stokBaru) => {
-  product
-    .updateOne(
-      { _id: ObjectId(id) },
-      { $inc: { stok: -stokBaru } }
-    ).then()
-}
-
-exports.addPenjualan = (data) =>
+exports.addPembelian = (data) =>
   new Promise((resolve, reject) => {
     try {
       model
         .create(data)
-        .then(() => {
-          data.products.forEach(r => {
-            updateStok(r.object_id, r.jumlah_penjualan)
+        .then((res) => {
+          data.barangs.map(i => {
+            return {
+              objectIdPembelian: res._id,
+              idPembelian: res.id_pembelian,
+              namaBarang: i.namaBarang,
+              hargaSatuan: i.hargaSatuan,
+              pajak: i.pajak,
+              jumlahPembelian: i.jumlahPembelian,
+              total: i.total,
+              stok: i.stok,
+              deskripsi: i.deskripsi
+            }
+          }).forEach(detail => {
+            c_detail_barang
+              .addDetailPembelian(detail)
           })
           resolve(requestResponse.common_success)
         })
@@ -34,7 +39,7 @@ exports.addPenjualan = (data) =>
     }
   })
 
-exports.getPenjualan = () =>
+exports.getPembelian = () =>
   new Promise((resolve, reject) => {
     try {
       model
@@ -52,7 +57,7 @@ exports.getPenjualan = () =>
     }
   })
 
-exports.getPenjualanById = (id) =>
+exports.getPembelianById = (id) =>
   new Promise((resolve, reject) => {
     try {
       model
@@ -70,7 +75,7 @@ exports.getPenjualanById = (id) =>
     }
   })
 
-exports.updatePenjualan = (id, data) =>
+exports.updatePembelian = (id, data) =>
   new Promise((resolve, reject) => {
     try {
       model
@@ -91,7 +96,7 @@ exports.updatePenjualan = (id, data) =>
     }
   })
 
-exports.deletePenjualan = (id) =>
+exports.deletePembelian = (id) =>
   new Promise((resolve, reject) => {
     try {
       model

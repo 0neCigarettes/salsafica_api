@@ -111,7 +111,10 @@ const requestResponse = {
     status: false,
     rc: '0058',
     message: 'Tidak ada data'
-  }
+  },
+  _success: 'Success !',
+  _failed: 'Failed !',
+  _error: 'Error !'
 }
 
 module.exports = { requestResponse, mongodbUri, dbConnect }

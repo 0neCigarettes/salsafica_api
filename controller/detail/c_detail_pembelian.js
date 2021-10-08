@@ -1,40 +1,26 @@
-
 const mongoose = require("mongoose")
-const model = require("../model/m_penjualan")
-const product = require("../model/m_product")
-const { requestResponse } = require("../setup")
+const model = require("../../model/detail/m_detail_pembelian")
+const { requestResponse } = require("../../setup")
 const ObjectId = mongoose.Types.ObjectId
 
-const updateStok = (id, stokBaru) => {
-  product
-    .updateOne(
-      { _id: ObjectId(id) },
-      { $inc: { stok: -stokBaru } }
-    ).then()
+exports.addDetailPembelian = (data) => {
+  try {
+    model
+      .create(data)
+      .then(() => {
+        console.log(requestResponse._success)
+      })
+      .catch((e) => {
+        console.log(e)
+        console.log(requestResponse._failed)
+      })
+  } catch (e) {
+    console.log(e)
+    console.log(requestResponse._error)
+  }
 }
 
-exports.addPenjualan = (data) =>
-  new Promise((resolve, reject) => {
-    try {
-      model
-        .create(data)
-        .then(() => {
-          data.products.forEach(r => {
-            updateStok(r.object_id, r.jumlah_penjualan)
-          })
-          resolve(requestResponse.common_success)
-        })
-        .catch((e) => {
-          console.log(e)
-          reject(requestResponse.common_error)
-        })
-    } catch (e) {
-      console.log(e)
-      reject(requestResponse.common_error)
-    }
-  })
-
-exports.getPenjualan = () =>
+exports.getAllDetailPembelian = () =>
   new Promise((resolve, reject) => {
     try {
       model
@@ -52,11 +38,11 @@ exports.getPenjualan = () =>
     }
   })
 
-exports.getPenjualanById = (id) =>
+exports.getDetailPembelianById = (object_id) =>
   new Promise((resolve, reject) => {
     try {
       model
-        .findOne({ _id: ObjectId(id) })
+        .find({ objectIdPembelian: ObjectId(object_id) })
         .then((res) => {
           resolve(requestResponse.commonSuccessWithData(res))
         })
@@ -70,28 +56,28 @@ exports.getPenjualanById = (id) =>
     }
   })
 
-exports.updatePenjualan = (id, data) =>
+exports.updateStokDetail = (id, stokBaru) =>
   new Promise((resolve, reject) => {
     try {
       model
         .updateOne(
           { _id: ObjectId(id) },
-          { $set: data }
+          { $inc: { stok: -stokBaru } }
         )
         .then(() => {
-          resolve(requestResponse.common_success)
+          console.log(requestResponse._success)
         })
         .catch((e) => {
           console.log(e)
-          reject(requestResponse.common_error)
+          console.log(requestResponse._failed)
         })
     } catch (e) {
       console.log(e)
-      reject(requestResponse.common_error)
+      console.log(requestResponse._error)
     }
   })
 
-exports.deletePenjualan = (id) =>
+exports.deletePembelian = (id) =>
   new Promise((resolve, reject) => {
     try {
       model
